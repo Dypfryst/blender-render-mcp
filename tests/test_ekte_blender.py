@@ -59,6 +59,10 @@ def test_ett_bilde_med_z_tekstur(miljo, motor):
     svar = tj.send_render(r"Z:\prosjekter\test\zsti.blend", navn=f"ekte {motor}", motor=motor, bilder="5",
                           opplosning_prosent=50, samples=4)
     s = vent(tj, svar["jobb_id"])
+    if motor == "BLENDER_EEVEE" and s["tilstand"] == "feilet":
+        # Uten GPU (f.eks. i GitHub Actions) skal EEVEE feile med tydelig melding (akseptansetest 3)
+        assert "CYCLES" in s["feilmelding"], s
+        return
     assert s["tilstand"] == "ferdig", s
     assert os.path.getsize(f"{svar['jobbmappe']['linux']}/bilder/bilde_0005.png") > 1000
 
