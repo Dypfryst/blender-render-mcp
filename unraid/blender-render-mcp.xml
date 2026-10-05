@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>blender-render-mcp</Name>
+  <Repository>ghcr.io/dypfryst/blender-render-mcp:latest</Repository>
+  <Registry>https://github.com/Dypfryst/blender-render-mcp/pkgs/container/blender-render-mcp</Registry>
+  <Network>bridge</Network>
+  <MyIP/>
+  <Shell>bash</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/Dypfryst/blender-render-mcp</Support>
+  <Project>https://github.com/Dypfryst/blender-render-mcp</Project>
+  <Overview>Lar Claude sende Blender-renderjobber til skjermkortet i serveren og hente resultatet tilbake. MCP-server med kø og renderprosess i én container. Bare for hjemmenettet – ikke åpne porten mot internett.</Overview>
+  <Category>Tools: MediaApp:Photos</Category>
+  <WebUI/>
+  <TemplateURL>https://raw.githubusercontent.com/Dypfryst/blender-render-mcp/main/unraid/blender-render-mcp.xml</TemplateURL>
+  <Icon>https://download.blender.org/branding/blender_logo_socket.png</Icon>
+  <ExtraParams>--runtime=nvidia</ExtraParams>
+  <PostArgs/>
+  <CPUset/>
+  <DateInstalled/>
+  <DonateText/>
+  <DonateLink/>
+  <Requires>Nvidia Driver-pluginen må være installert. Lag sharen «blender» først.</Requires>
+  <Config Name="MCP-port" Target="8765" Default="8765" Mode="tcp" Description="Porten Claude kobler til (endepunkt /mcp). Må være lik PORT. Ikke videresend den i ruteren." Type="Port" Display="always" Required="true" Mask="false">8765</Config>
+  <Config Name="Delt mappe (/data)" Target="/data" Default="/mnt/user/blender" Mode="rw" Description="Sharen blender. Her ligger prosjekter og ferdige renderinger. Samme mappe er Z: på PC-en." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/blender</Config>
+  <Config Name="Oppsett (/config)" Target="/config" Default="/mnt/user/appdata/blender-render-mcp" Mode="rw" Description="Køen (ko.db) og Blenders hurtiglager for GPU-kjerner. Tas med i appdata-backupen." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/blender-render-mcp</Config>
+  <Config Name="MCP_TOKEN" Target="MCP_TOKEN" Default="" Mode="" Description="Hemmelig nøkkel Claude sender med på hvert kall. Påkrevd. Lag en lang tilfeldig nøkkel (minst 16 tegn, gjerne 40+)." Type="Variable" Display="always" Required="true" Mask="true"/>
+  <Config Name="NVIDIA_VISIBLE_DEVICES" Target="NVIDIA_VISIBLE_DEVICES" Default="" Mode="" Description="GPU-UUID for RTX 3080, starter med GPU-. Kopier fra Settings → Nvidia Driver." Type="Variable" Display="always" Required="true" Mask="false"/>
+  <Config Name="NVIDIA_DRIVER_CAPABILITIES" Target="NVIDIA_DRIVER_CAPABILITIES" Default="all" Mode="" Description="La stå på all. Nødvendig for at EEVEE kan rendre uten skjerm." Type="Variable" Display="advanced" Required="true" Mask="false">all</Config>
+  <Config Name="PORT" Target="PORT" Default="8765" Mode="" Description="Porten serveren lytter på inne i containeren. Må være lik MCP-port over." Type="Variable" Display="advanced" Required="false" Mask="false">8765</Config>
+  <Config Name="DATA_DIR" Target="DATA_DIR" Default="/data" Mode="" Description="Den delte mappen inne i containeren. La stå på /data." Type="Variable" Display="advanced" Required="false" Mask="false">/data</Config>
+  <Config Name="CONFIG_DIR" Target="CONFIG_DIR" Default="/config" Mode="" Description="Mappen for køen og oppsett inne i containeren. La stå på /config." Type="Variable" Display="advanced" Required="false" Mask="false">/config</Config>
+  <Config Name="WIN_PREFIX" Target="WIN_PREFIX" Default="Z:\" Mode="" Description="Stasjonsbokstaven sharen har på PC-en. Må være den samme som i Utforsker." Type="Variable" Display="always" Required="false" Mask="false">Z:\</Config>
+  <Config Name="UNC_PREFIX" Target="UNC_PREFIX" Default="\\192.168.1.215\blender" Mode="" Description="Nettverksstien til sharen. Godtas som alternativ til Z:-stier." Type="Variable" Display="advanced" Required="false" Mask="false">\\192.168.1.215\blender</Config>
+  <Config Name="OLLAMA_URL" Target="OLLAMA_URL" Default="" Mode="" Description="Adressen til Ollama, f.eks. http://192.168.1.215:11434. Da slipper Ollama grafikkminnet før hver jobb. Tom = av." Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="NTFY_URL" Target="NTFY_URL" Default="" Mode="" Description="Adresse for varsel til mobilen når en jobb er ferdig eller feiler, f.eks. https://ntfy.sh/mitt-hemmelige-emne. Tom = av." Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="MAX_JOB_HOURS" Target="MAX_JOB_HOURS" Default="12" Mode="" Description="Største lengde på én jobb i timer. Lengre jobber stoppes og settes til feilet." Type="Variable" Display="advanced" Required="false" Mask="false">12</Config>
+  <Config Name="MAX_FRAME_MINUTES" Target="MAX_FRAME_MINUTES" Default="60" Mode="" Description="Lengste tid i minutter uten at et nytt bilde blir ferdig. Da stoppes jobben." Type="Variable" Display="advanced" Required="false" Mask="false">60</Config>
+  <Config Name="MIN_FREE_GB" Target="MIN_FREE_GB" Default="50" Mode="" Description="Minste ledige plass i GB på sharen før en ny jobb tas imot." Type="Variable" Display="advanced" Required="false" Mask="false">50</Config>
+  <Config Name="MIN_FREE_VRAM_GB" Target="MIN_FREE_VRAM_GB" Default="6" Mode="" Description="Er mindre grafikkminne ledig ved start, vises en advarsel i status. Jobben kjører likevel." Type="Variable" Display="advanced" Required="false" Mask="false">6</Config>
+  <Config Name="ALLOW_CPU" Target="ALLOW_CPU" Default="false" Mode="" Description="true = render på prosessoren hvis GPU-en ikke finnes. false = jobben feiler i stedet (anbefalt)." Type="Variable" Display="advanced" Required="false" Mask="false">false</Config>
+  <Config Name="PUID" Target="PUID" Default="99" Mode="" Description="Brukeren filene lages som. 99 = nobody, Unraids standard." Type="Variable" Display="advanced" Required="false" Mask="false">99</Config>
+  <Config Name="PGID" Target="PGID" Default="100" Mode="" Description="Gruppen filene lages som. 100 = users, Unraids standard." Type="Variable" Display="advanced" Required="false" Mask="false">100</Config>
+  <Config Name="UMASK" Target="UMASK" Default="000" Mode="" Description="Rettigheter på nye filer. 000 gir alle lese- og skrivetilgang, som er vanlig på Unraid." Type="Variable" Display="advanced" Required="false" Mask="false">000</Config>
+</Container>
