@@ -79,3 +79,24 @@ def test_verktoykall_gjennom_mcp(klient):
     assert "Fant ingen jobb" in feil["content"][0]["text"]
     avvist = kall(klient, "tools/call", {"name": "send_render", "arguments": {"blend_fil": "C:\\hemmelig.blend"}})["result"]
     assert avvist["isError"]
+
+
+def test_resultat_sender_bildet_i_svaret(tmp_path):
+    data = tmp_path / "data"
+    data.mkdir()
+    cfg = Config(mcp_token=NOKKEL, data_dir=data.as_posix(), config_dir=(tmp_path / "config").as_posix(), min_free_gb=0)
+    ko = Ko(cfg.ko_db)
+    tjeneste = Tjeneste(cfg, ko, Renderprosess(cfg, ko, blender=FALSK, nvidia=False), blender=FALSK)
+    jobb = ko.ny_jobb("bilde", "/data/x.blend", {"format": "PNG"}, "normal", cfg.render_dir)
+    os.makedirs(f"{jobb['mappe']}/bilder")
+    ko.klar(jobb["jobb_id"], {}, [1], [])
+    ko.neste()
+    ko.avslutt(jobb["jobb_id"], "ferdig")
+    open(f"{jobb['mappe']}/bilder/bilde_0001.png", "wb").write(b"png")
+    open(f"{jobb['mappe']}/forhandsvisning.jpg", "wb").write(b"\xff\xd8\xff\xe0jpeg")
+    with TestClient(lag_app(cfg, tjeneste)) as k:
+        res = kall(k, "tools/call", {"name": "resultat", "arguments": {"jobb_id": jobb["jobb_id"]}})["result"]
+    assert not res.get("isError")
+    tekst, bilde = res["content"]
+    assert json.loads(tekst["text"])["bilder"]["antall_ferdige"] == 1
+    assert bilde["type"] == "image" and bilde["mimeType"] == "image/jpeg"
