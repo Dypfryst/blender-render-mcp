@@ -56,10 +56,10 @@ Installasjonen tar under en time når imaget er bygget. Forutsetninger: den nye 
 9. **Claude Code.** I PowerShell på PC-en:
 
    ```
-   claude mcp add --transport http render http://192.168.1.215:8765/mcp --header "Authorization: Bearer <MCP_TOKEN>"
+   claude mcp add --transport http --scope user render http://192.168.1.215:8765/mcp --header "Authorization: Bearer <MCP_TOKEN>"
    ```
 
-   Sjekk med `claude mcp add --help` hvis syntaksen har endret seg.
+   `--scope user` gjør serveren tilgjengelig i alle prosjekter, ikke bare i mappen du står i. Sjekk med `claude mcp add --help` hvis syntaksen har endret seg.
 10. **Claude Desktop (valgfritt).** Lokal konfigurasjon i `claude_desktop_config.json` via broen `npx mcp-remote http://192.168.1.215:8765/mcp` med samme nøkkel i en header. Krever Node.js. Ikke testet.
 11. **Test.** Be Claude kjøre `helse` på render-serveren, og gå gjennom akseptansetestene i SPEC.md.
 
