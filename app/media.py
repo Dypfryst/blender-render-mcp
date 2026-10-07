@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 import glob
+import math
 import os
 import shutil
 import subprocess
 import tempfile
 
 MAKS_PX = 1024
-MINIATYR_PX = 336
+MELLOMROM_PX = 8  # mellom rutene i kontaktarket
 
 
 def _kjor(kommando: list[str], tidsfrist: float = 600) -> None:
@@ -40,18 +41,19 @@ def velg_jevnt(filer: list[str], antall: int = 9) -> list[str]:
 
 
 def kontaktark(filer: list[str], ut: str) -> None:
-    """3 × 3 rutenett av 9 jevnt fordelte bilder (én rad hvis færre enn 9)."""
+    """Rutenett av opptil 9 jevnt fordelte bilder: 2 × 2 for 2–4 bilder og 3 × 3 for 5–9. Tomme ruter blir svarte."""
     valgt = velg_jevnt(sorted(filer))
     if not valgt:
         return
-    kolonner, rader = (3, 3) if len(valgt) == 9 else (len(valgt), 1)
+    side = math.ceil(math.sqrt(len(valgt)))
+    miniatyr_px = (MAKS_PX - (side - 1) * MELLOMROM_PX) // side
     with tempfile.TemporaryDirectory() as tmp:
         miniatyrer = []
         for i, fil in enumerate(valgt):
             m = os.path.join(tmp, f"{i}.png")
-            _kjor(["oiiotool", *_til_jpeg_args(fil, MINIATYR_PX), "-o", m], 120)
+            _kjor(["oiiotool", *_til_jpeg_args(fil, miniatyr_px), "-o", m], 120)
             miniatyrer.append(m)
-        _kjor(["oiiotool", *miniatyrer, "--mosaic:pad=8", f"{kolonner}x{rader}",
+        _kjor(["oiiotool", *miniatyrer, f"--mosaic:pad={MELLOMROM_PX}", f"{side}x{side}",
                "--fit", f"{MAKS_PX}x{MAKS_PX}", "--origin", "+0+0", "--fullpixels", "-o", ut], 300)
 
 

@@ -93,7 +93,7 @@ def lag_mcp(tjeneste: Tjeneste) -> MCPServer:
     @mcp.tool(
         description=(
             "Resultatet av en renderjobb: filer (Windows- og Linux-stier), video, og forhåndsvisning som bilde i svaret "
-            "(siste ferdige bilde, maks 1024 px), pluss kontaktark med 9 bilder ved animasjon. Bruk forhåndsvisningen "
+            "(siste ferdige bilde, maks 1024 px), pluss kontaktark med opptil 9 bilder ved animasjon. Bruk forhåndsvisningen "
             "til å vurdere renderen før neste runde."
         ),
         annotations=ToolAnnotations(readOnlyHint=True),

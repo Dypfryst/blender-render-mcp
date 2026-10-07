@@ -61,6 +61,16 @@ def test_kontaktark_3x3(tmp_path):
     assert b > h  # 3 × 3 liggende bilder
 
 
+@pytest.mark.parametrize("antall", [2, 4, 5, 8])
+def test_kontaktark_rutenett_med_faerre_enn_9(tmp_path, antall):
+    """Færre enn 9 bilder gir 2 × 2 eller 3 × 3, ikke en tynn stripe."""
+    filer = lag_bilder(tmp_path / "bilder", antall, storr="640x360")
+    ut = tmp_path / "kontaktark.jpg"
+    media.kontaktark(filer, str(ut))
+    b, h = storrelse(ut)
+    assert b <= 1024 and b / 2 < h < b  # én rad med 16:9-bilder ville vært under halvparten så høy som bred
+
+
 def test_kontaktark_uten_svarte_felt(tmp_path):
     """Miniatyrene skal ligge rett i rutenettet, uten svart felt øverst eller kuttet nederste rad."""
     filer = lag_bilder(tmp_path / "bilder", 9, storr="640x360", farge="0x4080c0")
