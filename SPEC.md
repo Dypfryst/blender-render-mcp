@@ -66,10 +66,10 @@ Seks verktøy over Streamable HTTP på `/mcp`. `send_render` svarer med en gang.
 
 | Verktøy | Inndata | Svar |
 | --- | --- | --- |
-| `send_render` | `blend_fil` (påkrevd), `navn` (kort, brukes i mappenavnet), `motor` (CYCLES, BLENDER\_EEVEE eller fra\_fil; standard fra\_fil), `bilder` ("1", "1-250" eller tom = filens område), `oppløsning_prosent` (standard 100), `samples` (tom = filens), `format` (PNG, JPEG eller OPEN\_EXR; standard PNG), `video` (ja/nei; standard nei), `prioritet` (normal eller haster) | `jobb_id`, plass i køen, anslått start, jobbmappe (Windows og Linux), advarsler |
+| `send_render` | `blend_fil` (påkrevd), `navn` (kort, brukes i mappenavnet), `motor` (CYCLES, BLENDER\_EEVEE eller fra\_fil; standard fra\_fil), `bilder` ("1", "1-250" eller tom = filens område), `opplosning_prosent` (standard 100), `samples` (tom = filens), `format` (PNG, JPEG eller OPEN\_EXR; standard PNG), `video` (ja/nei; standard nei), `prioritet` (normal eller haster) | `jobb_id`, plass i køen, anslått start, jobbmappe (Windows og Linux), advarsler |
 | `status` | `jobb_id` | Tilstand (venter, forbereder, kjører, ferdig, feilet, avbrutt), plass i køen, bilde x av y, prosent, startet, anslått ferdig. Ved feil: de siste 30 loggradene |
 | `resultat` | `jobb_id` | Filliste, videofil, forhåndsvisning som bilde i svaret (JPEG, maks 1024 px på lengste side), kontaktark ved animasjon |
-| `køen` | – | Aktive og ventende jobber, pluss de 10 siste ferdige, fra alle tråder |
+| `koen` | – | Aktive og ventende jobber, pluss de 10 siste ferdige, fra alle tråder |
 | `avbryt` | `jobb_id` | Bekreftelse. Stopper Blender og beholder ferdige bilder |
 | `helse` | – | GPU-navn, brukt og ledig grafikkminne, Blender-versjon, antall i kø, ledig plass på `/data` |
 
@@ -93,7 +93,7 @@ Verktøybeskrivelsene skal si til Claude at
 
 **Grenser.** En jobb som går lenger enn `MAX_JOB_HOURS` (standard 12), eller som ikke lager et nytt bilde på `MAX_FRAME_MINUTES` (standard 60), stoppes og settes til feilet.
 
-**Opprydding.** Resultater slettes aldri automatisk. Jobber eldre enn 90 dager fjernes bare fra oversikten i `køen`.
+**Opprydding.** Resultater slettes aldri automatisk. Jobber eldre enn 90 dager fjernes bare fra oversikten i `koen`.
 
 ## Kjøring av Blender
 
