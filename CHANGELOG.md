@@ -1,6 +1,14 @@
 # Endringslogg
 
-## 0.1.0 – ikke publisert ennå
+## 0.1.1 – 2026-10-07
+
+- Kontaktarket har ikke lenger svart felt øverst og kuttet nederste rad. Miniatyrene beholdt en forskyvning etter `--fit` som `--mosaic` tok med.
+- Kontaktarket er et rutenett også med færre enn 9 bilder: 2 × 2 for 2–4 bilder og 3 × 3 for 5–9.
+- README: `claude mcp add` bruker `--scope user`, så serveren er tilgjengelig i alle prosjekter.
+- SPEC.md bruker navnene `koen` og `opplosning_prosent`, som serveren.
+- GitHub Actions: `docker/setup-buildx-action` v4 og `docker/build-push-action` v7, som kjører på Node 24.
+
+## 0.1.0 – 2026-10-05
 
 Første versjon etter SPEC.md.
 
