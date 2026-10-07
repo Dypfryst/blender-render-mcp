@@ -20,7 +20,15 @@ def storrelse(fil) -> tuple[int, int]:
     return s["width"], s["height"]
 
 
-def lag_bilder(mappe, antall: int, endelse: str = "png", storr: str = "1920x1080"):
+def piksel(fil, x: int, y: int) -> tuple[int, int, int]:
+    b, _ = storrelse(fil)
+    rgb = subprocess.run(["ffmpeg", "-v", "error", "-i", str(fil), "-f", "rawvideo", "-pix_fmt", "rgb24", "-"],
+                         capture_output=True, check=True).stdout
+    i = (y * b + x) * 3
+    return tuple(rgb[i:i + 3])
+
+
+def lag_bilder(mappe, antall: int, endelse: str = "png", storr: str = "1920x1080", farge: str | None = None):
     mappe.mkdir(exist_ok=True)
     filer = []
     for nr in range(1, antall + 1):
@@ -28,7 +36,8 @@ def lag_bilder(mappe, antall: int, endelse: str = "png", storr: str = "1920x1080
         if endelse == "exr":
             subprocess.run(["oiiotool", "--pattern", "checker", storr, "4", "-d", "half", "-o", str(fil)], check=True)
         else:
-            subprocess.run(["ffmpeg", "-v", "error", "-f", "lavfi", "-i", f"testsrc=size={storr}:rate=1",
+            kilde = f"color=c={farge}:size={storr}" if farge else f"testsrc=size={storr}:rate=1"
+            subprocess.run(["ffmpeg", "-v", "error", "-f", "lavfi", "-i", kilde,
                             "-frames:v", "1", str(fil)], check=True)
         filer.append(str(fil))
     return filer
@@ -50,6 +59,16 @@ def test_kontaktark_3x3(tmp_path):
     b, h = storrelse(ut)
     assert b <= 1024 and h <= 1024
     assert b > h  # 3 × 3 liggende bilder
+
+
+def test_kontaktark_uten_svarte_felt(tmp_path):
+    """Miniatyrene skal ligge rett i rutenettet, uten svart felt øverst eller kuttet nederste rad."""
+    filer = lag_bilder(tmp_path / "bilder", 9, storr="640x360", farge="0x4080c0")
+    ut = tmp_path / "kontaktark.jpg"
+    media.kontaktark(filer, str(ut))
+    b, h = storrelse(ut)
+    for x, y in [(2, 2), (b - 3, 2), (2, h - 3), (b - 3, h - 3), (b // 2, h // 2)]:
+        assert max(piksel(ut, x, y)) > 60, f"svart piksel i ({x}, {y})"
 
 
 def test_velg_jevnt():

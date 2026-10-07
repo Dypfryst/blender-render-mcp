@@ -22,7 +22,7 @@ def _til_jpeg_args(bilde: str, px: int) -> list[str]:
     args = [bilde, "--ch", "R,G,B"]
     if bilde.lower().endswith(".exr"):
         args += ["--colorconvert", "linear", "sRGB"]  # EXR er lineært; JPEG skal være sRGB
-    return args + ["--fit", f"{px}x{px}", "--fullpixels"]
+    return args + ["--fit", f"{px}x{px}", "--origin", "+0+0", "--fullpixels"]
 
 
 def forhandsvisning(bilde: str, ut: str) -> None:
@@ -52,7 +52,7 @@ def kontaktark(filer: list[str], ut: str) -> None:
             _kjor(["oiiotool", *_til_jpeg_args(fil, MINIATYR_PX), "-o", m], 120)
             miniatyrer.append(m)
         _kjor(["oiiotool", *miniatyrer, "--mosaic:pad=8", f"{kolonner}x{rader}",
-               "--fit", f"{MAKS_PX}x{MAKS_PX}", "--fullpixels", "-o", ut], 300)
+               "--fit", f"{MAKS_PX}x{MAKS_PX}", "--origin", "+0+0", "--fullpixels", "-o", ut], 300)
 
 
 def video(bildemappe: str, endelse: str, fps: float, ut: str) -> None:
